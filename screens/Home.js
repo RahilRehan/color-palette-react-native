@@ -3,9 +3,12 @@ import { FlatList, StyleSheet, RefreshControl, Text } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import PalettePreview from '../components/PalettePreview'
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation, route }) => {
 	const [colorPalettes, setColorPalettes] = useState([])
 	const [isRefreshing, setIsRefreshing] = useState(false)
+	const newColorPalette = route.params
+		? route.params.newColorPalette
+		: undefined
 
 	const fetchColorPalettes = useCallback(async () => {
 		const result = await fetch(
@@ -28,6 +31,12 @@ const Home = ({ navigation }) => {
 			setIsRefreshing(false)
 		}, 1000)
 	})
+
+	useEffect(() => {
+		if (newColorPalette) {
+			setColorPalettes((palettes) => [newColorPalette, ...palettes])
+		}
+	}, [newColorPalette])
 
 	return (
 		<FlatList
@@ -52,7 +61,7 @@ const Home = ({ navigation }) => {
 				<TouchableOpacity
 					onPress={() => navigation.navigate('ColorPaletteModal')}
 				>
-					<Text>Launch Modal</Text>
+					<Text style={styles.buttonText}>Add color scheme</Text>
 				</TouchableOpacity>
 			}
 		/>
@@ -63,6 +72,12 @@ const styles = StyleSheet.create({
 	list: {
 		padding: 10,
 		backgroundColor: 'white',
+	},
+	buttonText: {
+		fontSize: 18,
+		fontWeight: 'bold',
+		color: 'teal',
+		marginBottom: 10,
 	},
 })
 
